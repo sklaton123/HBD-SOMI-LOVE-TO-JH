@@ -9,7 +9,7 @@
     <style>
         :root { --gold: #d4af37; --bright-gold: #f1d592; --dark-bg: #0a0a0a; --glass: rgba(255, 255, 255, 0.05); --border: rgba(212, 175, 55, 0.3); }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--dark-bg); color: #fff; overflow: hidden; position: fixed; width: 100%; height: 100%; }
+        body { background-color: var(--dark-bg); color: #fff; overflow: hidden; position: fixed; width: 100%; height: 100%; touch-action: manipulation; }
 
         .bg-glow { position: fixed; width: 300px; height: 300px; background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: -1; filter: blur(50px); }
         .page { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 15px; transition: 0.5s ease; opacity: 0; }
@@ -48,22 +48,23 @@
         #timer { font-size: 100px; font-family: 'Playfair Display'; color: var(--gold); }
 
         .letter-text { font-size: 13.5px !important; line-height: 1.8 !important; text-align: center; color: #eee; word-break: keep-all; }
-        
-        /* 인증서 줄 간격 고정 및 단어 끊김 방지 */
-        .cert-text { text-align: left; line-height: 2.2 !important; font-size: 15px !important; border-top: 1px solid var(--border); padding-top: 20px; word-break: keep-all; }
+        .cert-text { text-align: left; line-height: 2.2 !important; font-size: 15px !important; border-top: 1px solid var(--border); padding-top: 20px; }
         
         .tight-text { display: block; width: 100%; text-align: center; white-space: nowrap; }
+
+        /* 인증서 문구 최적화 */
+        .cert-highlight { color: var(--gold); font-weight: bold; }
+        .cert-promise { display: block; white-space: nowrap; font-weight: bold; margin-top: 5px; }
     </style>
 </head>
-<body onclick="forcePlayMusic()">
+<body onclick="forceStartAudio()" ontouchstart="forceStartAudio()">
 
     <div class="bg-glow" style="top: 10%; left: 10%;"></div>
     <div class="bg-glow" style="bottom: 10%; right: 10%;"></div>
     
     <button class="music-btn" onclick="toggleMusic(event)"><i id="music-icon" class="fa-solid fa-music"></i></button>
     <audio id="bgm" loop preload="auto">
-        <!-- 안정적인 러블리 피아노 곡 (Pixabay CDN) -->
-        <source src="https://cdn.pixabay.com/audio/2022/01/20/audio_d0c6ff1101.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg">
     </audio>
 
     <div class="nav-bar" id="nav-area" style="display:none;">
@@ -71,7 +72,10 @@
         <button id="next-btn" class="btn" onclick="move(1)">NEXT <i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <div class="page active" id="page-1"><div id="timer">3</div></div>
+    <div class="page active" id="page-1">
+        <p style="letter-spacing: 5px; opacity: 0.5; margin-bottom: 10px; font-size: 12px;">TOUCH ANYWHERE TO START</p>
+        <div id="timer">3</div>
+    </div>
 
     <div class="page" id="page-2">
         <div class="glass-card">
@@ -85,8 +89,8 @@
                 <div class="bar-wrap"><div class="bar" style="background: linear-gradient(to top, var(--gold), #fff);" data-h="115%"></div><div class="year-label">26'</div></div>
             </div>
             <p style="font-size: 14.5px; line-height: 1.7;">
-                당신은 지난 <span style="color:var(--gold); font-weight:bold;">2,033일</span>간 우리 가족의<br>
-                <span class="tight-text">행복 지수를 <span style="color:var(--gold); font-weight:bold;">연평균 365%</span> 이상 성장시켰습니다.</span>
+                당신은 지난 <span class="cert-highlight">2,033일</span>간 우리 가족의<br>
+                <span class="tight-text">행복 지수를 <span class="cert-highlight">연평균 365%</span> 이상 성장시켰습니다.</span>
                 내 인생 가장 완벽한 투자는 당신입니다.
             </p>
         </div>
@@ -116,7 +120,7 @@
         <div class="glass-card">
             <h2 class="glow-title">Beautiful Asset</h2>
             <div class="scroll-content">
-                <div class="photo-area"><img src="image_48bf37.jpg"></div>
+                <div class="photo-area"><img src="image_48bf37.jpg" alt="Family Photo"></div>
                 <div class="letter-text">
                     <span class="tight-text">"38세, 당신의 가장 아름다운 순간을 영원히 기록합니다."</span><br>
                     사랑하는 여보, 38번째 생일을 정말 축하해.<br>
@@ -147,13 +151,12 @@
         <div class="glass-card" style="border: 2px solid var(--gold); background: rgba(15,15,15,0.95);">
             <h2 class="glow-title">Certificate</h2>
             <div class="cert-text">
-                당신은 지난 <span style="color:var(--gold); font-weight:bold;">2,033일</span>간 사랑과 헌신으로<br>
+                위 사람은 지난 <span class="cert-highlight">2,033일</span>간 사랑과 헌신으로<br>
                 우리 가족을 지켜주었기에,<br>
-                <!-- [수정] 강제 줄바꿈으로 '지원' 단어 끊김 완벽 방지 -->
-                본 남편은 귀하에게<br>
-                <span style="color:var(--gold); font-weight:bold;">평생 무상 보증 및 전폭적 지원</span>을 약속합니다.
+                본 남편은 귀하에게 <br> 
+                <span class="cert-promise">평생 무상 보증 및 전폭적 지원을 약속합니다.</span>
             </div>
-            <div style="width: 90px; height: 90px; margin: 30px auto; border: 3px double var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); font-weight: bold; transform: rotate(-15deg); font-size: 16px;">인증 완료</div>
+            <div style="width: 90px; height: 90px; margin: 25px auto; border: 3px double var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); font-weight: bold; transform: rotate(-15deg); font-size: 16px;">인증 완료</div>
             <p style="font-size: 13px; color: var(--gold);">2026. 05. 25. 남편 이종훈 드림</p>
         </div>
     </div>
@@ -162,19 +165,28 @@
     <script>
         let curr = 1; const total = 6;
         const bgm = document.getElementById('bgm');
+        let audioStarted = false;
 
-        function forcePlayMusic() {
-            if(bgm.paused) {
+        // 강력한 오디오 시작 함수 (모바일 브라우저 보안 우회)
+        function forceStartAudio() {
+            if (!audioStarted) {
                 bgm.play().then(() => {
+                    audioStarted = true;
                     document.getElementById('music-icon').className = 'fa-solid fa-pause';
-                }).catch(e => console.log("Waiting for more interaction"));
+                }).catch(e => console.log("Audio play blocked", e));
             }
         }
 
         function toggleMusic(e) {
-            e.stopPropagation();
-            if(bgm.paused) { bgm.play(); document.getElementById('music-icon').className = 'fa-solid fa-pause'; }
-            else { bgm.pause(); document.getElementById('music-icon').className = 'fa-solid fa-music'; }
+            if(e) e.stopPropagation();
+            if(bgm.paused) { 
+                bgm.play(); 
+                document.getElementById('music-icon').className = 'fa-solid fa-pause'; 
+                audioStarted = true;
+            } else { 
+                bgm.pause(); 
+                document.getElementById('music-icon').className = 'fa-solid fa-music'; 
+            }
         }
 
         let cd = 3;
@@ -184,11 +196,8 @@
             else {
                 document.getElementById('timer').innerText = "GO";
                 clearInterval(timer);
-                setTimeout(() => { 
-                    move(1); 
-                    document.getElementById('nav-area').style.display = 'flex'; 
-                    forcePlayMusic(); // GO가 나올 때 재생 시도
-                }, 600);
+                forceStartAudio(); // "GO" 시점에도 재생 시도
+                setTimeout(() => { move(1); document.getElementById('nav-area').style.display = 'flex'; }, 600);
             }
         }, 1000);
 
@@ -224,7 +233,8 @@
         }
         draw();
 
-        document.getElementById('spin').onclick = function() {
+        document.getElementById('spin').onclick = function(e) {
+            e.stopPropagation(); 
             this.disabled = true;
             document.getElementById('alert-text').style.opacity = '0';
             document.getElementById('win-txt').innerText = "";
